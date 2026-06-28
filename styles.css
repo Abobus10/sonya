@@ -723,3 +723,38 @@ body, html {
         padding: 2rem 1.5rem;
     }
 }
+
+/* Height-based adjustments for short mobile screens */
+@media (max-height: 660px) {
+    .modal-content {
+        padding: 1.5rem 1.2rem;
+        max-width: 90%;
+    }
+    .letter-decoration {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+    .letter-title {
+        font-size: 1.4rem;
+        margin-bottom: 0.6rem;
+    }
+    .letter-text-container {
+        max-height: 160px;
+        margin-bottom: 1rem;
+    }
+    .letter-text {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+    .intro-card {
+        padding: 2rem 1.5rem;
+    }
+    .intro-title {
+        font-size: 1.6rem;
+        margin-bottom: 0.8rem;
+    }
+    .intro-desc {
+        font-size: 0.85rem;
+        margin-bottom: 1.2rem;
+    }
+}

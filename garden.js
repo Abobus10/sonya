@@ -96,9 +96,16 @@ class Garden {
 
     resize() {
         const oldWidth = this.width;
+        const oldHeight = this.height;
         
         const cssWidth = window.innerWidth;
         const cssHeight = window.innerHeight;
+
+        // Prevent redundant resize triggers on mobile due to URL bar hide/show
+        if (oldWidth > 0 && Math.abs(cssWidth - oldWidth) < 10 && Math.abs(cssHeight - oldHeight) < 80) {
+            return;
+        }
+
         const dpr = window.devicePixelRatio || 1;
         
         this.canvas.width = cssWidth * dpr;
@@ -153,7 +160,8 @@ class Garden {
 
     initStars() {
         this.stars = [];
-        for (let i = 0; i < 120; i++) {
+        const starCount = (this.width || window.innerWidth) < 768 ? 60 : 120;
+        for (let i = 0; i < starCount; i++) {
             this.stars.push({
                 x: Math.random() * (this.width || window.innerWidth),
                 y: Math.random() * (this.height || window.innerHeight) * 0.7,
@@ -169,7 +177,8 @@ class Garden {
     initGrass() {
         this.grassBlades = [];
         const w = this.width || window.innerWidth;
-        for (let i = 0; i < 100; i++) {
+        const grassCount = w < 768 ? 45 : 100;
+        for (let i = 0; i < grassCount; i++) {
             this.grassBlades.push({
                 x: Math.random() * w,
                 height: 15 + Math.random() * 25,
