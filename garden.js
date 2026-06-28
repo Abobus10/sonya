@@ -380,6 +380,7 @@ class Garden {
 
     handleMouseUp() {
         this.sun.isDragging = false;
+        this.sun.isDraggedByUser = false;
     }
 
     handleTouchStart(e) {
@@ -865,16 +866,17 @@ class Garden {
                     }
                 }
 
-                // Draw main firefly
-                this.ctx.shadowBlur = p.size * 4;
-                this.ctx.shadowColor = `rgba(${c.r}, ${c.g}, ${c.b}, 0.8)`;
+                // Draw main firefly and a cheap simulated glow circle
+                this.ctx.fillStyle = `rgba(${c.r}, ${c.g}, ${c.b}, ${p.alpha * 0.25})`;
+                this.ctx.beginPath();
+                this.ctx.arc(p.x, p.y, p.size * 3.5, 0, Math.PI * 2);
+                this.ctx.fill();
+
                 this.ctx.fillStyle = `rgba(${c.r}, ${c.g}, ${c.b}, ${p.alpha})`;
                 this.ctx.beginPath();
                 this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                 this.ctx.fill();
             });
-            // reset shadow
-            this.ctx.shadowBlur = 0;
         }
 
         // 7. Draw Cursor & Burst Particles
@@ -888,15 +890,10 @@ class Garden {
                     this.drawSparkle(p.x, p.y, p.size, p.color);
                 }
             } else {
-                if (!this.isRainy) {
-                    this.ctx.shadowBlur = p.size * 2;
-                    this.ctx.shadowColor = p.color;
-                }
                 this.ctx.fillStyle = p.color;
                 this.ctx.beginPath();
                 this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                 this.ctx.fill();
-                this.ctx.shadowBlur = 0; // reset
             }
         });
         this.ctx.globalAlpha = 1.0; // reset master alpha
@@ -920,14 +917,11 @@ class Garden {
             grad.addColorStop(0.4, `rgba(220, 230, 255, ${star.currentOpacity * 0.5})`);
             grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
 
-            this.ctx.shadowBlur = star.size * 3;
-            this.ctx.shadowColor = `rgba(200, 220, 255, ${star.currentOpacity * 0.6})`;
             this.ctx.fillStyle = grad;
             this.ctx.beginPath();
             this.ctx.arc(star.x, star.y, star.size * 2, 0, Math.PI * 2);
             this.ctx.fill();
         });
-        this.ctx.shadowBlur = 0;
     }
 
     drawMoon() {
@@ -986,8 +980,11 @@ class Garden {
                 this.ctx.stroke();
             }
             // Head glow
-            this.ctx.shadowBlur = 8;
-            this.ctx.shadowColor = `rgba(255, 255, 255, ${ss.alpha})`;
+            this.ctx.fillStyle = `rgba(255, 255, 255, ${ss.alpha * 0.3})`;
+            this.ctx.beginPath();
+            this.ctx.arc(ss.x, ss.y, ss.size * 3.5, 0, Math.PI * 2);
+            this.ctx.fill();
+
             this.ctx.fillStyle = `rgba(255, 255, 255, ${ss.alpha})`;
             this.ctx.beginPath();
             this.ctx.arc(ss.x, ss.y, ss.size, 0, Math.PI * 2);
@@ -1097,8 +1094,10 @@ class Garden {
         this.ctx.fill();
 
         // Main sun disc
-        this.ctx.shadowBlur = this.sun.hover ? 35 : 20;
-        this.ctx.shadowColor = sunRatio < 0.6 ? '#ffb347' : '#e65c40';
+        this.ctx.fillStyle = sunRatio < 0.6 ? 'rgba(255, 179, 71, 0.25)' : 'rgba(230, 92, 64, 0.25)';
+        this.ctx.beginPath();
+        this.ctx.arc(this.sun.x, this.sun.y, this.sun.radius * 1.35, 0, Math.PI * 2);
+        this.ctx.fill();
         
         const sunGrad = this.ctx.createRadialGradient(
             this.sun.x, this.sun.y, 0,
@@ -1349,8 +1348,7 @@ class Garden {
             const petals = flower.petalsCount;
             const angleStep = (Math.PI * 2) / petals;
 
-            this.ctx.shadowBlur = flower.isHovered ? 12 : 5;
-            this.ctx.shadowColor = flower.color.primary;
+            // Glow is handled by radialGlow gradient, no shadowBlur needed
 
             for (let i = 0; i < petals; i++) {
                 this.ctx.save();
@@ -1402,9 +1400,6 @@ class Garden {
             }
 
             // Draw flower center (pistil)
-            this.ctx.shadowBlur = 8;
-            this.ctx.shadowColor = '#fff';
-            
             const centerSize = (currentSize * 0.3) * (1 + Math.sin(Date.now() / 250) * 0.08);
             const centerGrad = this.ctx.createRadialGradient(0, 0, 0, 0, 0, centerSize);
             centerGrad.addColorStop(0, '#ffffff');
@@ -1419,8 +1414,6 @@ class Garden {
         } else {
             // BUD STATE (Rainy Mode)
             const budSize = plant.flower.budSize;
-            this.ctx.shadowBlur = 2;
-            this.ctx.shadowColor = plant.flower.color.secondary;
 
             this.ctx.fillStyle = plant.flower.color.secondary;
             this.ctx.beginPath();
