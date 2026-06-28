@@ -64,9 +64,8 @@ body, html {
     background: radial-gradient(circle at 50% -20%, rgba(255, 255, 255, 0.05), transparent 80%),
                 radial-gradient(circle at 10% 30%, rgba(255, 255, 255, 0.02), transparent 50%),
                 radial-gradient(circle at 90% 40%, rgba(255, 255, 255, 0.03), transparent 60%);
-    opacity: 1;
+    opacity: 0.6;
     transition: opacity 5s ease, filter 5s ease;
-    mix-blend-mode: overlay;
     pointer-events: none;
 }
 
@@ -175,8 +174,7 @@ body, html {
 #floatingClouds .cloud {
     position: absolute;
     border-radius: 50%;
-    background: radial-gradient(ellipse, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 50%, transparent 70%);
-    filter: blur(8px);
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0.005) 65%, transparent 85%);
     animation: floatCloud var(--cloud-speed, 60s) linear infinite;
 }
 
@@ -196,7 +194,6 @@ body, html {
     pointer-events: none;
     opacity: 0;
     transition: opacity 3s ease;
-    mix-blend-mode: screen;
     transform: translate(-50%, -50%);
 }
 

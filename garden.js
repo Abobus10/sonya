@@ -205,7 +205,7 @@ class Garden {
     initGrass() {
         this.grassBlades = [];
         const w = this.width || window.innerWidth;
-        const grassCount = w < 768 ? 45 : 100;
+        const grassCount = w < 768 ? 20 : 100;
         for (let i = 0; i < grassCount; i++) {
             this.grassBlades.push({
                 x: Math.random() * w,
@@ -526,31 +526,45 @@ class Garden {
                 drop.x += this.wind * 2 + Math.sin(drop.wobblePhase) * 0.3;
 
                 if (drop.y > this.height - 20) {
-                    // Create splash with more particles
-                    if (Math.random() < 0.25) {
-                        const splashCount = 2 + Math.floor(Math.random() * 3);
-                        for (let s = 0; s < splashCount; s++) {
+                    // Create splash particles (Optimized for mobile)
+                    const isMobile = window.innerWidth < 768 || ('ontouchstart' in window);
+                    const splashChance = isMobile ? 0.08 : 0.25;
+                    if (Math.random() < splashChance) {
+                        if (isMobile) {
+                            // Single simple particle on mobile, no heavy ripple ellipse checks
                             this.splashes.push({
                                 x: drop.x,
                                 y: this.height - 20,
-                                vx: (Math.random() - 0.5) * 5 + this.wind,
-                                vy: -Math.random() * 3.5 - 1,
-                                radius: 0.8 + Math.random() * 1.5,
-                                alpha: 0.6
+                                vx: (Math.random() - 0.5) * 2 + this.wind * 0.5,
+                                vy: -Math.random() * 2 - 1,
+                                radius: 0.8 + Math.random() * 1.0,
+                                alpha: 0.5
+                            });
+                        } else {
+                            const splashCount = 2 + Math.floor(Math.random() * 3);
+                            for (let s = 0; s < splashCount; s++) {
+                                this.splashes.push({
+                                    x: drop.x,
+                                    y: this.height - 20,
+                                    vx: (Math.random() - 0.5) * 5 + this.wind,
+                                    vy: -Math.random() * 3.5 - 1,
+                                    radius: 0.8 + Math.random() * 1.5,
+                                    alpha: 0.6
+                                });
+                            }
+                            // Ripple ring effect on ground
+                            this.splashes.push({
+                                x: drop.x,
+                                y: this.height - 20,
+                                vx: 0,
+                                vy: 0,
+                                radius: 1,
+                                alpha: 0.4,
+                                isRipple: true,
+                                maxRadius: 6 + Math.random() * 4,
+                                expandSpeed: 0.3 + Math.random() * 0.2
                             });
                         }
-                        // Ripple ring effect on ground
-                        this.splashes.push({
-                            x: drop.x,
-                            y: this.height - 20,
-                            vx: 0,
-                            vy: 0,
-                            radius: 1,
-                            alpha: 0.4,
-                            isRipple: true,
-                            maxRadius: 6 + Math.random() * 4,
-                            expandSpeed: 0.3 + Math.random() * 0.2
-                        });
                     }
                     // Reset raindrop
                     drop.y = -20;
