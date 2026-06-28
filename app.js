@@ -272,8 +272,16 @@ class App {
         this.weatherToggleBtn.addEventListener('click', () => this.toggleWeather());
         this.soundToggleBtn.addEventListener('click', () => this.toggleSound());
         
-        this.modalCloseBtn.addEventListener('click', () => this.closeLetter());
-        this.modalBackdrop.addEventListener('click', () => this.closeLetter());
+        // Prevent simulated click-throughs (ghost clicks) on touchscreens
+        const handleClose = (e) => {
+            e.preventDefault();
+            this.closeLetter();
+        };
+        this.modalCloseBtn.addEventListener('click', handleClose);
+        this.modalCloseBtn.addEventListener('touchstart', handleClose, { passive: false });
+        
+        this.modalBackdrop.addEventListener('click', handleClose);
+        this.modalBackdrop.addEventListener('touchstart', handleClose, { passive: false });
     }
 
     initIntroParticles() {

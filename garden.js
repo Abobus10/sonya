@@ -83,6 +83,34 @@ class Garden {
         ];
         this.messageIndex = 0;
 
+        // Pre-render star sprite on offscreen canvas
+        this.starCanvas = document.createElement('canvas');
+        this.starCanvas.width = 16;
+        this.starCanvas.height = 16;
+        const sCtx = this.starCanvas.getContext('2d');
+        const sGrad = sCtx.createRadialGradient(8, 8, 0, 8, 8, 8);
+        sGrad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        sGrad.addColorStop(0.3, 'rgba(220, 230, 255, 0.7)');
+        sGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        sCtx.fillStyle = sGrad;
+        sCtx.beginPath();
+        sCtx.arc(8, 8, 8, 0, Math.PI * 2);
+        sCtx.fill();
+
+        // Pre-render firefly sprite on offscreen canvas
+        this.fireflyCanvas = document.createElement('canvas');
+        this.fireflyCanvas.width = 16;
+        this.fireflyCanvas.height = 16;
+        const fCtx = this.fireflyCanvas.getContext('2d');
+        const fGrad = fCtx.createRadialGradient(8, 8, 0, 8, 8, 8);
+        fGrad.addColorStop(0, 'rgba(255, 245, 150, 1)');
+        fGrad.addColorStop(0.4, 'rgba(255, 200, 80, 0.5)');
+        fGrad.addColorStop(1, 'rgba(255, 200, 80, 0)');
+        fCtx.fillStyle = fGrad;
+        fCtx.beginPath();
+        fCtx.arc(8, 8, 8, 0, Math.PI * 2);
+        fCtx.fill();
+
         // Initialize entities
         this.initRain();
         this.initPlants();
@@ -848,35 +876,26 @@ class Garden {
             }
         });
 
-        // 6. Draw Ambient Sunset Particles (Fireflies with trails)
+        // 6. Draw Ambient Sunset Particles (Fireflies with trails using cached offscreen canvas)
         if (!this.isRainy) {
             this.ambientParticles.forEach(p => {
-                const c = p.color;
-                
                 // Draw trail
                 if (p.trail.length > 1) {
                     for (let t = 0; t < p.trail.length; t++) {
                         const trailPt = p.trail[t];
-                        const trailAlpha = (t / p.trail.length) * p.alpha * 0.4;
-                        const trailSize = p.size * (t / p.trail.length) * 0.7;
-                        this.ctx.fillStyle = `rgba(${c.r}, ${c.g}, ${c.b}, ${trailAlpha})`;
-                        this.ctx.beginPath();
-                        this.ctx.arc(trailPt.x, trailPt.y, trailSize, 0, Math.PI * 2);
-                        this.ctx.fill();
+                        const trailAlpha = (t / p.trail.length) * p.alpha * 0.2;
+                        const trailSize = p.size * (t / p.trail.length) * 0.8;
+                        this.ctx.globalAlpha = trailAlpha;
+                        this.ctx.drawImage(this.fireflyCanvas, trailPt.x - trailSize, trailPt.y - trailSize, trailSize * 2, trailSize * 2);
                     }
                 }
 
-                // Draw main firefly and a cheap simulated glow circle
-                this.ctx.fillStyle = `rgba(${c.r}, ${c.g}, ${c.b}, ${p.alpha * 0.25})`;
-                this.ctx.beginPath();
-                this.ctx.arc(p.x, p.y, p.size * 3.5, 0, Math.PI * 2);
-                this.ctx.fill();
-
-                this.ctx.fillStyle = `rgba(${c.r}, ${c.g}, ${c.b}, ${p.alpha})`;
-                this.ctx.beginPath();
-                this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                this.ctx.fill();
+                // Draw main firefly
+                this.ctx.globalAlpha = p.alpha;
+                const sz = p.size * 2.5; // Scale up slightly to account for radial fade transparency
+                this.ctx.drawImage(this.fireflyCanvas, p.x - sz, p.y - sz, sz * 2, sz * 2);
             });
+            this.ctx.globalAlpha = 1.0; // Reset alpha
         }
 
         // 7. Draw Cursor & Burst Particles
@@ -908,20 +927,11 @@ class Garden {
     drawStars() {
         this.stars.forEach(star => {
             if (star.currentOpacity <= 0.01) return;
-
-            const grad = this.ctx.createRadialGradient(
-                star.x, star.y, 0,
-                star.x, star.y, star.size * 2
-            );
-            grad.addColorStop(0, `rgba(255, 255, 255, ${star.currentOpacity})`);
-            grad.addColorStop(0.4, `rgba(220, 230, 255, ${star.currentOpacity * 0.5})`);
-            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-
-            this.ctx.fillStyle = grad;
-            this.ctx.beginPath();
-            this.ctx.arc(star.x, star.y, star.size * 2, 0, Math.PI * 2);
-            this.ctx.fill();
+            this.ctx.globalAlpha = star.currentOpacity;
+            const sz = star.size * 2.5; // Scale slightly for radial fade
+            this.ctx.drawImage(this.starCanvas, star.x - sz, star.y - sz, sz * 2, sz * 2);
         });
+        this.ctx.globalAlpha = 1.0; // Reset alpha
     }
 
     drawMoon() {
