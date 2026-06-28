@@ -296,16 +296,17 @@ class Garden {
         let clickedFlower = null;
         let minDist = Infinity;
         
-        // Generous 2.5x hit area for fingers on mobile, and precise 1.1x area for mouse cursors on desktop
+        // Highly forgiving hit area: at least 40px radius on PC and 60px on mobile
         const isMobile = window.innerWidth < 768 || ('ontouchstart' in window);
-        const multiplier = isMobile ? 2.5 : 1.1;
+        const minHitRadius = isMobile ? 60 : 40;
+        const multiplier = isMobile ? 2.8 : 1.8;
 
         this.plants.forEach(plant => {
-            // Unconditional tap: Sonechka can click any spawned plant at its tip, even if it is still a growing bud!
             const dx = x - plant.tipX;
             const dy = y - plant.tipY;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            const maxRange = plant.flower.maxSize * multiplier;
+            // Calculate tap target radius (either scaled size or minimum fallback)
+            const maxRange = Math.max(minHitRadius, plant.flower.maxSize * multiplier);
             if (dist < maxRange && dist < minDist) {
                 minDist = dist;
                 clickedFlower = plant;
