@@ -1,0 +1,725 @@
+/* Reset & Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none; /* Prevents long-press magnifying glass on mobile */
+    -webkit-tap-highlight-color: transparent; /* Removes translucent tap box on mobile */
+}
+
+body, html {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #0f141d;
+    font-family: 'Montserrat', sans-serif;
+    color: #ffffff;
+}
+
+/* Background Systems */
+.sky-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.sky-rainy {
+    background: linear-gradient(180deg, #182026 0%, #2f3e46 60%, #4f5d65 100%);
+    opacity: 1;
+    transition: opacity 4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.sky-sunset {
+    background: linear-gradient(180deg, #1e0b36 0%, #4d1234 35%, #9e1b4f 60%, #e65c40 85%, #ffb347 100%);
+    opacity: 0;
+    transition: opacity 4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.weather-sunset .sky-rainy {
+    opacity: 0;
+}
+
+.weather-sunset .sky-sunset {
+    opacity: 1;
+}
+
+/* Clouds Overlay for realistic depth */
+.clouds-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    background: radial-gradient(circle at 50% -20%, rgba(255, 255, 255, 0.05), transparent 80%),
+                radial-gradient(circle at 10% 30%, rgba(255, 255, 255, 0.02), transparent 50%),
+                radial-gradient(circle at 90% 40%, rgba(255, 255, 255, 0.03), transparent 60%);
+    opacity: 1;
+    transition: opacity 5s ease, filter 5s ease;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+}
+
+.weather-sunset .clouds-overlay {
+    opacity: 0.4;
+    filter: saturate(1.5) brightness(1.2);
+}
+
+/* Sunset Radial Glow */
+.sun-glow {
+    position: absolute;
+    bottom: -10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120vw;
+    height: 80vw;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 179, 71, 0.25) 0%, rgba(230, 92, 64, 0.1) 40%, transparent 70%);
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 6s ease;
+    pointer-events: none;
+}
+
+.weather-sunset .sun-glow {
+    opacity: 1;
+}
+
+/* Rainbow Overlay: Appears after rain is stopped */
+.rainbow-overlay {
+    position: absolute;
+    top: 5%;
+    left: -10%;
+    width: 120%;
+    height: 150%;
+    border-radius: 50%;
+    /* Subtle neon multi-layer gradient */
+    border: 35px solid transparent;
+    border-top: 15px solid rgba(255, 0, 0, 0.08);
+    border-image: linear-gradient(to right, 
+        rgba(255, 0, 0, 0) 0%, 
+        rgba(255, 0, 0, 0.12) 20%, 
+        rgba(255, 127, 0, 0.12) 25%, 
+        rgba(255, 255, 0, 0.12) 30%, 
+        rgba(0, 255, 0, 0.12) 35%, 
+        rgba(0, 0, 255, 0.12) 40%, 
+        rgba(75, 0, 130, 0.12) 45%, 
+        rgba(148, 0, 211, 0.12) 50%,
+        rgba(148, 0, 211, 0) 70%
+    ) 1;
+    z-index: 3;
+    opacity: 0;
+    transform: scale(0.9) translateY(50px);
+    transition: opacity 8s ease, transform 8s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    mask-image: radial-gradient(circle, transparent 55%, black 56%);
+    -webkit-mask-image: radial-gradient(circle, transparent 55%, black 56%);
+}
+
+.weather-sunset .rainbow-overlay {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+/* ===== DOM Stars Container ===== */
+#starsContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70%;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 4s ease;
+}
+
+.weather-sunset #starsContainer {
+    opacity: 1;
+}
+
+#starsContainer .star {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+    animation: twinkle var(--twinkle-duration, 3s) ease-in-out var(--twinkle-delay, 0s) infinite;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.15; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* ===== Floating Clouds ===== */
+#floatingClouds {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60%;
+    z-index: 2;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+#floatingClouds .cloud {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 50%, transparent 70%);
+    filter: blur(8px);
+    animation: floatCloud var(--cloud-speed, 60s) linear infinite;
+}
+
+@keyframes floatCloud {
+    0% { transform: translateX(-120%); }
+    100% { transform: translateX(calc(100vw + 120%)); }
+}
+
+/* ===== Lens Flare ===== */
+.lens-flare {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 230, 180, 0.15) 0%, rgba(255, 200, 100, 0.05) 40%, transparent 70%);
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 3s ease;
+    mix-blend-mode: screen;
+    transform: translate(-50%, -50%);
+}
+
+.weather-sunset .lens-flare {
+    opacity: 1;
+}
+
+/* ===== Weather Transition Flash ===== */
+#weatherFlash {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    z-index: 99;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease-out;
+}
+
+/* ===== Intro Particles ===== */
+#introParticles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+#introParticles .intro-particle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    animation: driftUp var(--drift-duration, 8s) linear var(--drift-delay, 0s) infinite;
+}
+
+@keyframes driftUp {
+    0% { transform: translateY(0); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.3; }
+    100% { transform: translateY(-100vh); opacity: 0; }
+}
+
+/* Main Canvas */
+#gardenCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 4;
+    cursor: pointer;
+    touch-action: none; /* Prevents browser double-tap zoom/scroll interception */
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* User Interface Container */
+.ui-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2.5rem;
+}
+
+.btn, .modal-content, .modal-content * {
+    pointer-events: auto;
+}
+
+/* Header styling */
+.header {
+    text-align: center;
+    margin-top: 1rem;
+    animation: fadeInDown 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: color 4s ease, text-shadow 4s ease;
+}
+
+.weather-sunset .title {
+    color: #fff9e6;
+    text-shadow: 0 0 15px rgba(255, 179, 71, 0.4), 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.subtitle {
+    font-size: 0.95rem;
+    font-weight: 300;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    opacity: 0.8;
+    color: #d1d8e0;
+    transition: color 4s ease;
+}
+
+.weather-sunset .subtitle {
+    color: #ffcccc;
+}
+
+/* Weather & Sound buttons position */
+.weather-control {
+    position: absolute;
+    top: 3.5rem;
+    left: 2.5rem;
+    animation: fadeInLeft 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.audio-control {
+    position: absolute;
+    top: 3.5rem;
+    right: 2.5rem;
+    animation: fadeInRight 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Button Design */
+.btn {
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #ffffff;
+    padding: 0.8rem 1.6rem;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+/* Weather Specific Button States */
+.btn-weather {
+    min-width: 170px;
+}
+
+.weather-rainy .btn-weather {
+    border-color: rgba(112, 161, 255, 0.4);
+    box-shadow: 0 4px 15px rgba(112, 161, 255, 0.15);
+}
+
+.weather-sunset .btn-weather {
+    background: rgba(255, 118, 117, 0.15);
+    border-color: rgba(255, 118, 117, 0.4);
+    box-shadow: 0 4px 15px rgba(255, 118, 117, 0.2);
+}
+
+.weather-sunset .btn-weather:hover {
+    background: rgba(255, 118, 117, 0.25);
+    box-shadow: 0 8px 25px rgba(255, 118, 117, 0.35);
+}
+
+.btn-weather .btn-icon {
+    font-size: 1.1rem;
+    transition: transform 0.6s ease;
+}
+
+.btn-weather:hover .btn-icon {
+    transform: rotate(15deg) scale(1.1);
+}
+
+/* Sound Button States */
+.btn-audio.active {
+    background: rgba(46, 204, 113, 0.1);
+    border-color: rgba(46, 204, 113, 0.3);
+}
+
+/* Bottom hint text */
+.interaction-hint {
+    align-self: center;
+    margin-bottom: 1.5rem;
+    animation: fadeInUp 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+    background: rgba(0, 0, 0, 0.25);
+    padding: 0.6rem 1.5rem;
+    border-radius: 30px;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    max-width: 90%;
+    text-align: center;
+}
+
+.hint-text {
+    font-size: 0.85rem;
+    font-weight: 300;
+    letter-spacing: 1px;
+    opacity: 0.9;
+    color: #e2e8f0;
+    transition: color 4s ease;
+}
+
+.weather-sunset .hint-text {
+    color: #ffe6e6;
+}
+
+/* Glassmorphic Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal-backdrop {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(12, 17, 26, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.modal-content {
+    position: relative;
+    width: 90%;
+    max-width: 460px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3),
+                inset 0 0 20px rgba(255, 255, 255, 0.05);
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 101;
+    overflow: hidden;
+}
+
+/* Glow border animation for Sunset theme cards */
+.weather-sunset .modal-content {
+    border-color: rgba(255, 179, 71, 0.3);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(255, 118, 117, 0.25),
+                inset 0 0 20px rgba(255, 179, 71, 0.05);
+}
+
+.modal.hidden .modal-content {
+    transform: scale(0.85) translateY(30px);
+}
+
+.modal-close {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.2rem;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.8rem;
+    cursor: pointer;
+    line-height: 1;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.letter-decoration {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 8px rgba(255, 118, 117, 0.5));
+    animation: pulse 2s infinite ease-in-out;
+}
+
+.letter-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+    letter-spacing: 1px;
+    color: #ffe6e6;
+}
+
+.letter-text-container {
+    width: 100%;
+    max-height: 250px;
+    overflow-y: auto;
+    padding-right: 5px;
+    margin-bottom: 1.5rem;
+}
+
+/* Custom Scrollbar for letters */
+.letter-text-container::-webkit-scrollbar {
+    width: 4px;
+}
+.letter-text-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+}
+.letter-text-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+.letter-text {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    line-height: 1.7;
+    font-weight: 300;
+    color: #f1f2f6;
+    text-align: left;
+    white-space: pre-line;
+}
+
+.letter-footer {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 0.5rem;
+}
+
+/* Entrance/Intro Screen Overlay */
+.intro-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    background: linear-gradient(135deg, #0e121a 0%, #171d29 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem;
+    transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.intro-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.intro-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 28px;
+    padding: 3rem 2.5rem;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4),
+                inset 0 0 30px rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    animation: scaleIn 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    z-index: 1;
+}
+
+.intro-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    margin-bottom: 1.2rem;
+    color: #fff;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.intro-desc {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    color: #ccd1d9;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+}
+
+.btn-start {
+    width: 100%;
+    justify-content: center;
+    padding: 1.1rem 2rem;
+    font-size: 1rem;
+    background: linear-gradient(135deg, #ff7675 0%, #e84393 100%);
+    border: none;
+    box-shadow: 0 8px 25px rgba(232, 67, 147, 0.3);
+}
+
+.btn-start:hover {
+    background: linear-gradient(135deg, #ff8a89 0%, #f74d9e 100%);
+    box-shadow: 0 12px 30px rgba(232, 67, 147, 0.5);
+    transform: translateY(-3px);
+}
+
+/* Animations */
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(255, 118, 117, 0.4)); }
+    50% { transform: scale(1.08); filter: drop-shadow(0 0 16px rgba(255, 118, 117, 0.7)); }
+    100% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(255, 118, 117, 0.4)); }
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .ui-container {
+        padding: 1.5rem;
+    }
+    
+    .weather-control {
+        top: 1.5rem;
+        left: 1.5rem;
+        bottom: auto;
+        transform: none;
+        animation: fadeInDown 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .audio-control {
+        top: 1.5rem;
+        right: 1.5rem;
+    }
+
+    /* Smaller buttons on mobile to prevent blocking canvas space */
+    .btn-weather, .btn-audio {
+        padding: 0.55rem 0.9rem;
+        font-size: 0.85rem;
+    }
+
+    .title {
+        font-size: 2.1rem;
+        margin-top: 3.5rem;
+    }
+    
+    .subtitle {
+        font-size: 0.8rem;
+        letter-spacing: 2px;
+    }
+    
+    .interaction-hint {
+        margin-bottom: 0.5rem;
+    }
+    
+    .intro-card {
+        padding: 2.5rem 1.8rem;
+    }
+    
+    .intro-title {
+        font-size: 1.8rem;
+    }
+    
+    .modal-content {
+        padding: 2rem 1.5rem;
+    }
+}

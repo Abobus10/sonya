@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Интерактивный сад заката - место где расцветают чувства после дождя">
+    <title>Сад Нашего Заката</title>
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:ital,wght@0,300;0,400;0,600;1,300&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="weather-rainy">
+    <!-- Ambient background overlays -->
+    <div class="sky-background sky-rainy"></div>
+    <div class="sky-background sky-sunset"></div>
+    <div class="clouds-overlay"></div>
+    <div class="rainbow-overlay"></div>
+    <div class="sun-glow"></div>
+    <div class="stars-container" id="starsContainer"></div>
+    <div class="floating-clouds" id="floatingClouds"></div>
+    <div class="lens-flare"></div>
+    <div class="water-reflection"></div>
+
+    <!-- Main Canvas for Generative Art (Garden & Rain) -->
+    <canvas id="gardenCanvas"></canvas>
+
+    <!-- Interactive Interface Overlay -->
+    <div class="ui-container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title">После Дождя</h1>
+            <p class="subtitle">Интерактивный сад наших чувств</p>
+        </header>
+
+        <!-- Weather Control Panel -->
+        <div class="weather-control">
+            <button id="weatherToggle" class="btn btn-weather" aria-label="Сменить погоду">
+                <span class="btn-icon">🌧️</span>
+                <span class="btn-text">Идет дождь...</span>
+            </button>
+        </div>
+
+        <!-- Ambient Sound Controls -->
+        <div class="audio-control">
+            <button id="soundToggle" class="btn btn-audio" aria-label="Включить звук">
+                <span class="audio-icon">🔇</span>
+                <span class="audio-text">Без звука</span>
+            </button>
+        </div>
+
+        <!-- Hint / Guide for interaction -->
+        <div class="interaction-hint">
+            <span class="hint-text">Прикоснись к экрану во время дождя, чтобы посадить цветы. Прекрати дождь, чтобы они распустились.</span>
+        </div>
+    </div>
+
+    <!-- Glassmorphic Modals for Secret Letters -->
+    <div id="letterModal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Закрыть">&times;</button>
+            <div class="modal-body">
+                <div class="letter-decoration">🌸</div>
+                <h2 class="letter-title">Воспоминание</h2>
+                <div class="letter-text-container">
+                    <p class="letter-text"></p>
+                </div>
+                <div class="letter-footer">— Твой любимый</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Intro overlay to get audio permissions and introduce the vibe -->
+    <div id="introOverlay" class="intro-overlay">
+        <div class="intro-card">
+            <div class="intro-particles" id="introParticles"></div>
+            <h2 class="intro-title">привет, сонечка)</h2>
+            <p class="intro-desc">я сделал этот маленький сад для нас) он меняется так же как небо после дождика. надевай наушники и заходи)</p>
+            <button id="startBtn" class="btn btn-start">войти в сад</button>
+        </div>
+    </div>
+
+    <!-- Code scripts -->
+    <script src="garden.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
